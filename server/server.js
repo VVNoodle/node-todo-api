@@ -20,6 +20,14 @@ app.post('/todos', (req,res)=>{
   }, (err)=>{
     res.send(400, err);
   });
+}); //end POST
+
+app.get('/todos', (req, res)=>{
+  Todo.find().then((data)=>{
+    res.send({todos: data});
+  }).catch((err)=>{
+    res.send(400, err);
+  });
 });
 
 app.listen(3000, ()=>{

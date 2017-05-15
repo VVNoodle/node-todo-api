@@ -1,6 +1,8 @@
 //C:\Program Files\MongoDB\Server\3.4\bin
 //C:\Users\Brick\mongo-data
 const {MongoClient, ObjectID} = require('mongodb');
+// const MongoClient = require('mongodb').MongoClient;
+// const ObjectID = require('mongodb').ObjectID;
 
 MongoClient.connect('mongodb://localhost:27017/TodoApp', (err,db)=>{
   if (err) {

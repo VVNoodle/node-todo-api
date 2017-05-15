@@ -3,6 +3,8 @@ const request = require('supertest');
 
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
+// const app = require('./../server').app;
+// const Todo = require('./../models/todo').Todo;
 
 beforeEach((done)=>{
   Todo.remove({}).then(()=>done());
