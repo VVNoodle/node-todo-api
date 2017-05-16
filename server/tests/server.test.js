@@ -1,14 +1,19 @@
 const expect = require('expect');
 const request = require('supertest');
+const {ObjectID} = require('mongodb');
 
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 // const app = require('./../server').app;
 // const Todo = require('./../models/todo').Todo;
 
-const todos = [
-  {todo: 'Go for a walk'},
-  {todo: 'eat lunch'}
+const todos = [{
+    _id: new ObjectID(),
+    todo: 'Go for a walk'
+  },{
+    _id: new ObjectID(),
+    todo: 'eat lunch'
+  }
 ];
 
 beforeEach((done)=>{
@@ -17,55 +22,82 @@ beforeEach((done)=>{
   }).then(()=>done());
 });
 
-describe('POST /todos', ()=>{
-  it('should create a new todo', (done)=>{
-    var todo = 'Test todo text';
+// describe('POST /todos', ()=>{
+//   it('should create a new todo', (done)=>{
+//     var todo = 'Test todo text';
+//     request(app)
+//       .post('/todos')
+//       .send({todo})
+//       .expect(200)
+//       .expect((res)=>{
+//         expect(res.body.todo).toBe(todo);
+//       })
+//       .end((err, res)=>{
+//         if (err) {
+//           return done(err);
+//         }
+//
+//         Todo.find({todo}).then((todos)=>{
+//           expect(todos.length).toBe(1);
+//           expect(todos[0].todo).toBe(todo);
+//           done();
+//         }).catch((err) => done(err));
+//       });
+//   })
+//
+//   it('should not add todo w/ bad data', (done)=>{
+//     request(app)
+//       .post('/todos')
+//       .send({})
+//       .expect(400)
+//       .end((err, res)=>{
+//         if (err) {
+//           return done(err);
+//         }
+//
+//         Todo.find().then((todos)=>{
+//           expect(todos.length).toBe(2);
+//           done();
+//         }).catch((err) => done(err));
+//       });
+//   })
+// }); //end POST
+//
+// describe('GET /todos', ()=>{
+//   it('should get all todos', (done)=>{
+//     request(app)
+//       .get('/todos')
+//       .expect(200)
+//       .expect((res)=>{
+//         expect(res.body.todos.length).toBe(2);
+//       })
+//       .end(done);
+//   });
+// }); //end GET
+
+describe('GET /todos/:id', () => {
+  it('should return todo doc', (done)=>{
     request(app)
-      .post('/todos')
-      .send({todo})
+      .get(`/todos/${todos[0]._id.toHexString()}`)
       .expect(200)
       .expect((res)=>{
-        expect(res.body.todo).toBe(todo);
-      })
-      .end((err, res)=>{
-        if (err) {
-          return done(err);
-        }
-
-        Todo.find({todo}).then((todos)=>{
-          expect(todos.length).toBe(1);
-          expect(todos[0].todo).toBe(todo);
-          done();
-        }).catch((err) => done(err));
-      });
-  })
-
-  it('should not add todo w/ bad data', (done)=>{
-    request(app)
-      .post('/todos')
-      .send({})
-      .expect(400)
-      .end((err, res)=>{
-        if (err) {
-          return done(err);
-        }
-
-        Todo.find().then((todos)=>{
-          expect(todos.length).toBe(2);
-          done();
-        }).catch((err) => done(err));
-      });
-  })
-}); //end POST
-
-describe('GET /todos', ()=>{
-  it('should get all todos', (done)=>{
-    request(app)
-      .get('/todos')
-      .expect(200)
-      .expect((res)=>{
-        expect(res.body.todos.length).toBe(2);
+        expect(res.body.text.todo).toBe(todos[0].todo);
       })
       .end(done);
   });
-}); //end GET
+
+  it('should return 404 if todo not found', (done)=>{
+    var fakeId = new ObjectID();
+    request(app)
+      .get(`/todos/${fakeId.toHexString()}`)
+      .expect(404)
+      .end(done);
+  });
+
+  it('should return 404 for non-object ids', (done)=>{
+    request(app)
+      .get('/todos/123')
+      .expect(404)
+      .end(done);
+  });
+})

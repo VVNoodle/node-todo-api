@@ -16,7 +16,7 @@ app.post('/todos', (req,res)=>{
     todo:req.body.todo
   });
 
-  todo.save().then((result)=>{
+todo.save().then((result)=>{
     res.send(result);
   }, (err)=>{
     res.send(400, err);
@@ -33,17 +33,15 @@ app.get('/todos', (req, res)=>{
 
 app.get('/todos/:id', (req, res)=>{
   var id = req.params.id;
-
   if (!ObjectID.isValid(id)) {
     return res.status(404).send();
   }
-
   Todo.findById(id).then(
     (doc)=>{
       if(!doc){
         return res.status(404).send();
       }
-      res.send({todo: doc});
+      res.send({text: doc});
     },
     (err)=>{
       res.status(404).send();
