@@ -116,13 +116,10 @@ describe('DELETE /todos/:id', ()=>{
         if (err) {
           return done(err);
         }
-        //query database usingg findById
         Todo.findById(id).then((result)=>{
             expect(result).toNotExist();
             done();
-        }).catch((err)=>{
-          done(err);
-        });
+        }).catch((err)=> done(err));// end todo
       })//end end
   });
 
