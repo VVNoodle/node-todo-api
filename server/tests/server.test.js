@@ -75,29 +75,70 @@ beforeEach((done)=>{
 //   });
 // }); //end GET
 
-describe('GET /todos/:id', () => {
-  it('should return todo doc', (done)=>{
+// describe('GET /todos/:id', () => {
+//   it('should return todo doc', (done)=>{
+//     request(app)
+//       .get(`/todos/${todos[0]._id.toHexString()}`)
+//       .expect(200)
+//       .expect((res)=>{
+//         expect(res.body.text.todo).toBe(todos[0].todo);
+//       })
+//       .end(done);
+//   });
+//
+//   it('should return 404 if todo not found', (done)=>{
+//     var fakeId = new ObjectID();
+//     request(app)
+//       .get(`/todos/${fakeId.toHexString()}`)
+//       .expect(404)
+//       .end(done);
+//   });
+//
+//   it('should return 404 for non-object ids', (done)=>{
+//     request(app)
+//       .get('/todos/123')
+//       .expect(404)
+//       .end(done);
+//   });
+// })
+
+describe('DELETE /todos/:id', ()=>{
+  it('should be able to delete an existing todo', (done)=>{
+    const id = todos[0]._id.toHexString();
+    console.log(id);
     request(app)
-      .get(`/todos/${todos[0]._id.toHexString()}`)
+      .delete(`/todos/${id}`)
       .expect(200)
-      .expect((res)=>{
-        expect(res.body.text.todo).toBe(todos[0].todo);
+      .expect((data)=>{
+        expect(data.body.todo._id).toBe(todos[0]._id.toHexString());
       })
-      .end(done);
+      .end((err, res)=>{
+        if (err) {
+          return done(err);
+        }
+        //query database usingg findById
+        Todo.findById(id).then((result)=>{
+            expect(result).toNotExist();
+            done();
+        }).catch((err)=>{
+          done(err);
+        });
+      })//end end
   });
 
-  it('should return 404 if todo not found', (done)=>{
-    var fakeId = new ObjectID();
+  it('should return 404 if id isn\'t valid', (done)=>{
+    var id = "123";
     request(app)
-      .get(`/todos/${fakeId.toHexString()}`)
+      .delete(`/todos/${id}`)
       .expect(404)
       .end(done);
   });
 
-  it('should return 404 for non-object ids', (done)=>{
+  it('should return 404 if id is valid but do not exist', (done)=>{
+    var id = '591ac177daf41b001163568b';
     request(app)
-      .get('/todos/123')
+      .delete(`/todos/${id}`)
       .expect(404)
       .end(done);
   });
-})
+});
