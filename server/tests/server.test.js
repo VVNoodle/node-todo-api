@@ -13,6 +13,11 @@ const todos = [{
   },{
     _id: new ObjectID(),
     todo: 'eat lunch'
+  },{
+    _id: new ObjectID(),
+    todo: 'Attend lecture',
+    completed: true,
+    completedAt: 2
   }
 ];
 
@@ -102,40 +107,77 @@ beforeEach((done)=>{
 //   });
 // })
 
-describe('DELETE /todos/:id', ()=>{
-  it('should be able to delete an existing todo', (done)=>{
-    const id = todos[0]._id.toHexString();
-    console.log(id);
+// describe('DELETE /todos/:id', ()=>{
+//   it('should be able to delete an existing todo', (done)=>{
+//     const id = todos[0]._id.toHexString();
+//     console.log(id);
+//     request(app)
+//       .delete(`/todos/${id}`)
+//       .expect(200)
+//       .expect((data)=>{
+//         expect(data.body.todo._id).toBe(todos[0]._id.toHexString());
+//       })
+//       .end((err, res)=>{
+//         if (err) {
+//           return done(err);
+//         }
+//         Todo.findById(id).then((result)=>{
+//             expect(result).toNotExist();
+//             done();
+//         }).catch((err)=> done(err));// end todo
+//       })//end end
+//   });
+//
+//   it('should return 404 if id isn\'t valid', (done)=>{
+//     var id = "123";
+//     request(app)
+//       .delete(`/todos/${id}`)
+//       .expect(404)
+//       .end(done);
+//   });
+//
+//   it('should return 404 if id is valid but do not exist', (done)=>{
+//     var id = '591ac177daf41b001163568b';
+//     request(app)
+//       .delete(`/todos/${id}`)
+//       .expect(404)
+//       .end(done);
+//   });
+// });//end DELETE /todos/:id
+
+describe('PATCH /todos/:id', ()=>{
+  it("should change existing todo's text and completedAt" , (done)=>{
+    const _id = todos[2]._id.toHexString();
+    const todo = "TESTING";
     request(app)
-      .delete(`/todos/${id}`)
+      .patch(`/todos/${_id}`)
+       .send({
+        completed: true,
+        todo
+      })
+      .expect(200)
+      .expect((result)=>{
+          expect(result.body.todo).toBe(todo);
+          expect(result.body.completed).toBe(true);
+          expect(result.body.completedAt).toBeA('number');
+      })
+      .end(done); //end end
+  });
+  it("should clear completedAt when todo isn't completed", (done)=>{
+     const _id = todos[2]._id.toHexString();
+     const todo = "Just a test";
+     request(app)
+      .patch(`/todos/${_id}`)
+      .send({
+        completed: false,
+        todo
+      })
       .expect(200)
       .expect((data)=>{
-        expect(data.body.todo._id).toBe(todos[0]._id.toHexString());
+          expect(data.body.todo).toBe(todo);
+          expect(data.body.completed).toBe(false);
+          expect(data.body.completedAt).toNotExist();
       })
-      .end((err, res)=>{
-        if (err) {
-          return done(err);
-        }
-        Todo.findById(id).then((result)=>{
-            expect(result).toNotExist();
-            done();
-        }).catch((err)=> done(err));// end todo
-      })//end end
+      .end(done); //end end
   });
-
-  it('should return 404 if id isn\'t valid', (done)=>{
-    var id = "123";
-    request(app)
-      .delete(`/todos/${id}`)
-      .expect(404)
-      .end(done);
-  });
-
-  it('should return 404 if id is valid but do not exist', (done)=>{
-    var id = '591ac177daf41b001163568b';
-    request(app)
-      .delete(`/todos/${id}`)
-      .expect(404)
-      .end(done);
-  });
-});
+});// end PATCH /todos/:id
