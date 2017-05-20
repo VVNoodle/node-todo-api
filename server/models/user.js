@@ -43,21 +43,36 @@ var userSchema = new mongoose.Schema({
 userSchema.methods.toJSON = function(){
   var user = this;
   var userObject = user.toObject();
-
   return _.pick(userObject, ['_id', 'email']);
 };
 
 userSchema.methods.generateAuthToken = function(){
   var user = this;
   var access = 'auth';
-  var token = jwt.sign({_id: user._id.toHexString(), access}, 'abcefg').toString();
+  var token = jwt.sign({_id: user._id.toHexString(), access}, 'secret').toString();
   user.tokens.push({access, token});
   return user.save().then(()=>{
     return token;
   });
 };
 
-var User = mongoose.model('User', userSchema);
+//statics is object like method but instead of returning instance method, it returns a model method
+userSchema.statics.findByToken = function(token){
+  var User = this;
+  var decoded;//store decoded jwt values
 
+  try{
+    decoded = jwt.verify(token, 'secret');
+  } catch(e){
+    return Promise.reject();
+  }
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  });
+};
+
+var User = mongoose.model('User', userSchema);
 module.exports = {User};
 // module.exports.User = User;
