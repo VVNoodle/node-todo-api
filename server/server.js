@@ -1,3 +1,5 @@
+//  cd C:\Users\Brick\OneDrive\Projects\practice\node-todo-api
+//  cd E:\OneDrive\Projects\practice\node-todo-api
 require('./config/config');
 
 const _ = require('lodash');
@@ -97,7 +99,24 @@ app.patch('/todos/:id', (req, res)=>{
     }).catch((err)=>{
       res.status(400).send(err);
     });
-});
+}); //end PATCH /todos/:id
+
+app.post('/users', (req, res)=>{
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User(body);
+
+  user.save().then(()=>{
+    return user.generateAuthToken();
+  }).then((token)=>{
+    res.header('x-auth', token).send(user);
+  }).catch((err) => {res.status(400).send(err)});
+}); //end POST /users
+
+app.get('/users', (req, res)=>{
+  User.find().then((data)=>{
+    res.send(data);
+  }).catch(err => res.status(404).send(err));
+}); //end GET /users
 
 app.listen(port, ()=>{
   console.log(`Started on port ${port}!`);

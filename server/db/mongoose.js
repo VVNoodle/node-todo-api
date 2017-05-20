@@ -1,7 +1,7 @@
 //  C:\Program Files\MongoDB\Server\3.4\bin
 //  mongod --dbpath="C:\Users\Brick\mongo-data"
 
-//  D:\MongoDB\Server\3.4\bin
+//  cd /d D:\MongoDB\Server\3.4\bin
 //  mongod.exe --dbpath D:\mongo-data
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
