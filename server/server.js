@@ -1,5 +1,5 @@
 //  cd C:\Users\Brick\OneDrive\Projects\practice\node-todo-api
-//  cd E:\OneDrive\Projects\practice\node-todo-api
+//  cd /d E:\OneDrive\Projects\practice\node-todo-api
 require('./config/config');
 
 const _ = require('lodash');
@@ -48,7 +48,7 @@ app.get('/todos/:id', (req, res)=>{
       if(!todo){
         return res.status(404).send();
       }
-      res.send(JSON.stringify({todo}, undefined, 2));
+      res.send({text: todo});
     },
     (err)=>{
       res.status(404).send();
