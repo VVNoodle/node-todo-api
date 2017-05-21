@@ -1,4 +1,4 @@
-var {ObjectID} = require('mongodb');
+const {ObjectID} = require('mongodb');
 const jwt = require('jsonwebtoken');
 const {Todo} = require('./../../models/todo');
 const {User} = require('./../../models/user');
@@ -37,10 +37,6 @@ const users = [{
   _id: userTwoId,
   email:'wrong@hotmail.com',
   password: '12345678',
-  tokens: [{
-    access: 'auth',
-    token: 'wrong'
-  }]
 }];
 
 const populateUsers = (done)=>{
