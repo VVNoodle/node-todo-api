@@ -50,6 +50,15 @@ userSchema.methods.generateAuthToken = function(){
   });
 };
 
+userSchema.methods.removeToken = function(token){
+  var user = this;
+  return user.update({
+    $pull: {
+      tokens: {token} //not only remove token property, but also the entire obj
+    }
+  })
+};
+
 //statics is object like method but instead of returning instance method, it returns a model method
 userSchema.statics.findByToken = function(token){
   var User = this;
