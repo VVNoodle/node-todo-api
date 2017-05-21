@@ -3,28 +3,9 @@ const jwt = require('jsonwebtoken');
 const {Todo} = require('./../../models/todo');
 const {User} = require('./../../models/user');
 
-const todos = [{
-    _id: new ObjectID(),
-    todo: 'Go for a walk'
-  },{
-    _id: new ObjectID(),
-    todo: 'eat lunch'
-  },{
-    _id: new ObjectID(),
-    todo: 'Attend lecture',
-    completed: true,
-    completedAt: 2
-  }
-];
-
-const populate = (done)=>{
-  Todo.remove({}).then(()=>{
-     return Todo.insertMany(todos);
-  }).then(()=>done());
-};
-
 const userOneId = new ObjectID();
 const userTwoId = new ObjectID();
+const userThreeId = new ObjectID();
 const users = [{
   _id: userOneId,
   email: 'test@example.com',
@@ -37,6 +18,18 @@ const users = [{
   _id: userTwoId,
   email:'wrong@hotmail.com',
   password: '12345678',
+  tokens: [{
+    access:'auth',
+    token: jwt.sign({_id: userTwoId, access: 'auth'}, 'secret').toString()
+  }]
+},{
+  _id: userThreeId,
+  email:'last@hotmail.com',
+  password: 'testtest',
+  tokens: [{
+    access:'auth',
+    token: jwt.sign({_id: userThreeId, access: 'auth'}, 'secret').toString()
+  }]
 }];
 
 const populateUsers = (done)=>{
@@ -47,5 +40,29 @@ const populateUsers = (done)=>{
     return Promise.all([userOne, userTwo])
   }).then(()=>done());
 };
+
+const todos = [{
+    _id: new ObjectID(),
+    todo: 'Go for a walk',
+    _creator: userOneId
+  },{
+    _id: new ObjectID(),
+    todo: 'eat lunch',
+    _creator: userTwoId
+  },{
+    _id: new ObjectID(),
+    todo: 'Attend lecture',
+    completed: true,
+    completedAt: 2,
+    _creator: userThreeId
+  }
+];
+
+const populate = (done)=>{
+  Todo.remove({}).then(()=>{
+     return Todo.insertMany(todos);
+  }).then(()=>done());
+};
+
 
 module.exports = {todos, populate, users, populateUsers};

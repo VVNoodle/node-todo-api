@@ -15,8 +15,13 @@ var Todo = mongoose.model('Todo', {
   completedAt: {
     type: Number,
     default: null
+  },
+  _creator: {
+    isAsync: false,
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   }
 });
 
 module.exports = {Todo};
-// module.exports.Todo = Todo; 
+// module.exports.Todo = Todo;
